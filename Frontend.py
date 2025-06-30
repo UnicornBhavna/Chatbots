@@ -22,10 +22,20 @@ def download_faiss_index():
         f.write(r.content)
     return faiss.read_index("faiss.index")
 
+@st.cache_resource
+def load_metadata():
+    start = time.time()
+    with open("metadata.pkl", "rb") as f:
+        metadata = pickle.load(f)
+    st.write(f"Metadata loaded in {time.time() - start:.2f} seconds")
+    return metadata
+
 
 # === Constants ===
 # INDEX_PATH = "faiss.index"
-METADATA_PATH = "metadata.pkl"
+INDEX_PATH = download_faiss_index()
+# METADATA_PATH = "metadata.pkl"
+METADATA_PATH = load_metadata()
 MAX_REQUESTS_PER_HOUR = 5
 RATE_LIMIT_KEY = "rate_limit"
 
