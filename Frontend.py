@@ -33,9 +33,12 @@ def load_metadata():
 
 # === Constants ===
 # INDEX_PATH = "faiss.index"
-INDEX_PATH = download_faiss_index()
+st.write(f"Starting FAISS load at {time.time() - start:.2f}s")
+faiss_index = load_index()
+st.write(f"FAISS loaded at {time.time() - start:.2f}s")
 # METADATA_PATH = "metadata.pkl"
-METADATA_PATH = load_metadata()
+metadata_store = load_metadata()
+st.write(f"Metadata loaded at {time.time() - start:.2f}s")
 MAX_REQUESTS_PER_HOUR = 5
 RATE_LIMIT_KEY = "rate_limit"
 
@@ -66,12 +69,11 @@ def load_model():
     return SentenceTransformer("all-MiniLM-L6-v2")
 
 # === Load Assets ===
-faiss_index = load_index()
-metadata_store = load_metadata()
 embedding_model = load_model()
+st.write(f"Model loaded at {time.time() - start:.2f}s")
 
 # === UI ===
-st.set_page_config(page_title="Bhavna Resume Bot", page_icon="📄")
+st.set_page_config(page_title="Bhavna's Resume Bot", page_icon="📄")
 st.title("🤖 Bhavna's Resume Chatbot")
 st.markdown("Ask about Bhavna's experience, education, skills, or leadership roles.")
 
