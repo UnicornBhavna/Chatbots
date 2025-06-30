@@ -8,6 +8,8 @@ import numpy as np
 import time
 import requests
 
+start = time.time()
+
 # === Constants ===
 INDEX_PATH = "faiss.index"
 METADATA_PATH = "metadata.pkl"
