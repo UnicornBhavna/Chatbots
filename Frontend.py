@@ -36,16 +36,18 @@ def load_metadata():
 
 # === Constants ===
 start = time.time()
+st.write("⏳ Starting FAISS index load...")
 faiss_index = load_index()
-st.write(f"⏱ FAISS index loaded in {time.time() - start:.2f}s")
+st.write(f"✅ FAISS index loaded in {time.time() - start:.2f} seconds")
+
 
 start = time.time()
+st.write("⏳ Starting metadata load...")
 metadata_store = load_metadata()
-st.write(f"⏱ Metadata loaded in {time.time() - start:.2f}s")
+st.write(f"✅ Metadata loaded in {time.time() - start:.2f} seconds")
 
-start = time.time()
+
 embedding_model = load_model()
-st.write(f"⏱ Model loaded in {time.time() - start:.2f}s")
 
 MAX_REQUESTS_PER_HOUR = 5
 RATE_LIMIT_KEY = "rate_limit"
