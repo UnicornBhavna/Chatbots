@@ -37,7 +37,7 @@ def load_metadata():
 start = time.time()
 print(start)
 st.write("⏳ Starting FAISS index load...")
-faiss_index = load_index()
+faiss_index = download_faiss_index()
 st.write(f"✅ FAISS index loaded in {time.time() - start:.2f} seconds")
 
 
