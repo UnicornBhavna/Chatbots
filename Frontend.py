@@ -35,6 +35,7 @@ def load_metadata():
 
 # === Constants ===
 start = time.time()
+print(start)
 st.write("⏳ Starting FAISS index load...")
 faiss_index = load_index()
 st.write(f"✅ FAISS index loaded in {time.time() - start:.2f} seconds")
@@ -44,9 +45,6 @@ start = time.time()
 st.write("⏳ Starting metadata load...")
 metadata_store = load_metadata()
 st.write(f"✅ Metadata loaded in {time.time() - start:.2f} seconds")
-
-
-embedding_model = load_model()
 
 MAX_REQUESTS_PER_HOUR = 5
 RATE_LIMIT_KEY = "rate_limit"
@@ -78,8 +76,10 @@ def load_model():
     return SentenceTransformer("all-MiniLM-L6-v2")
 
 # === Load Assets ===
+st.write("⏳ Starting embedding model load...")
+start = time.time()
 embedding_model = load_model()
-st.write(f"Model loaded at {time.time() - start:.2f}s")
+st.write(f"✅ Model loaded in {time.time() - start:.2f}s")
 
 # === UI ===
 st.set_page_config(page_title="Bhavna's Resume Bot", page_icon="📄")
