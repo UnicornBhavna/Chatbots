@@ -1,55 +1,63 @@
 import streamlit as st
 from sentence_transformers import SentenceTransformer
-import faiss, pickle, openai, os, numpy as np, time
-import requests
+import faiss
+import pickle
+import openai
 import os
+import numpy as np
 import time
+import requests
 
+# === Constants ===
+INDEX_PATH = "faiss.index"
+METADATA_PATH = "metadata.pkl"
 
 # === Load API Key ===
-try:
-    #openai.api_key = st.secrets["OPENAI_API_KEY"]
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-except KeyError:
-    st.error("OpenAI API key not found. Please add it in Streamlit Secrets.")
+openai.api_key = os.getenv("OPENAI_API_KEY")
+if not openai.api_key:
+    st.error("OpenAI API key not found. Please add it in Streamlit Secrets or environment variables.")
     st.stop()
 
-
-# === Loading Files from Hugging Face ===
-
-@st.cache_resource
+# === Download and cache FAISS index ===
+@st.cache_resource(show_spinner=False)
 def download_faiss_index():
     url = "https://huggingface.co/datasets/Bhavna1998/ResumeBot/resolve/main/faiss.index"
     r = requests.get(url)
-    with open("faiss.index", "wb") as f:
+    with open(INDEX_PATH, "wb") as f:
         f.write(r.content)
-    return faiss.read_index("faiss.index")
+    return faiss.read_index(INDEX_PATH)
 
-@st.cache_resource
+# === Load and cache metadata locally ===
+@st.cache_resource(show_spinner=False)
 def load_metadata():
-    with open("metadata.pkl", "rb") as f:
-        metadata = pickle.load(f)
-    st.write(f"Metadata loaded")
-    return metadata
+    with open(METADATA_PATH, "rb") as f:
+        return pickle.load(f)
 
+# === Load and cache embedding model ===
+@st.cache_resource(show_spinner=False)
+def load_model():
+    return SentenceTransformer("all-MiniLM-L6-v2")
 
-# === Constants ===
-start = time.time()
-print(start)
+# === Load assets with timing ===
 st.write("⏳ Starting FAISS index load...")
+start = time.time()
 faiss_index = download_faiss_index()
 st.write(f"✅ FAISS index loaded in {time.time() - start:.2f} seconds")
 
-
-start = time.time()
 st.write("⏳ Starting metadata load...")
+start = time.time()
 metadata_store = load_metadata()
 st.write(f"✅ Metadata loaded in {time.time() - start:.2f} seconds")
 
+st.write("⏳ Starting embedding model load...")
+start = time.time()
+embedding_model = load_model()
+st.write(f"✅ Model loaded in {time.time() - start:.2f} seconds")
+
+# === Rate limiting and UI code below ===
 MAX_REQUESTS_PER_HOUR = 5
 RATE_LIMIT_KEY = "rate_limit"
 
-# === Rate Limiting ===
 def check_rate_limit():
     now = time.time()
     data = st.session_state.get(RATE_LIMIT_KEY, {"count": 0, "start_time": now})
@@ -61,27 +69,6 @@ def check_rate_limit():
     st.session_state[RATE_LIMIT_KEY] = data
     return True
 
-# === Caching ===
-@st.cache_resource(show_spinner=False)
-def load_index():
-    return faiss.read_index(INDEX_PATH)
-
-@st.cache_resource(show_spinner=False)
-def load_metadata():
-    with open(METADATA_PATH, "rb") as f:
-        return pickle.load(f)
-
-@st.cache_resource(show_spinner=False)
-def load_model():
-    return SentenceTransformer("all-MiniLM-L6-v2")
-
-# === Load Assets ===
-st.write("⏳ Starting embedding model load...")
-start = time.time()
-embedding_model = load_model()
-st.write(f"✅ Model loaded in {time.time() - start:.2f}s")
-
-# === UI ===
 st.set_page_config(page_title="Bhavna's Resume Bot", page_icon="📄")
 st.title("🤖 Bhavna's Resume Chatbot")
 st.markdown("Ask about Bhavna's experience, education, skills, or leadership roles.")
