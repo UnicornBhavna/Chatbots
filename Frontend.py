@@ -27,10 +27,9 @@ def download_faiss_index():
 
 @st.cache_resource
 def load_metadata():
-    start = time.time()
     with open("metadata.pkl", "rb") as f:
         metadata = pickle.load(f)
-    st.write(f"Metadata loaded in {time.time() - start:.2f} seconds")
+    st.write(f"Metadata loaded")
     return metadata
 
 
