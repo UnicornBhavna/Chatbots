@@ -8,6 +8,5 @@ huggingface_hub==0.14.1
 accelerate==0.19.0
 pdfplumber==0.10.1
 python-dotenv==1.0.0
-numpy==1.21.6
+numpy>=1.22
 streamlit==1.24.1
-dotenv
