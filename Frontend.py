@@ -9,8 +9,8 @@ import time
 import requests
 
 # === Constants ===
-INDEX_PATH = "faiss.index"
-METADATA_PATH = "metadata.pkl"
+# INDEX_PATH = "faiss.index"
+# METADATA_PATH = "metadata.pkl"
 
 # === Load API Key ===
 openai.api_key = os.getenv("OPENAI_API_KEY")
