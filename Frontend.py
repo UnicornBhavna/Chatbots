@@ -2,11 +2,13 @@ import streamlit as st
 from sentence_transformers import SentenceTransformer
 import faiss, pickle, openai, os, numpy as np, time
 import requests
+import os
 
 
 # === Load API Key ===
 try:
-    openai.api_key = st.secrets["OPENAI_API_KEY"]
+    #openai.api_key = st.secrets["OPENAI_API_KEY"]
+    openai.api_key = os.getenv("OPENAI_API_KEY")
 except KeyError:
     st.error("OpenAI API key not found. Please add it in Streamlit Secrets.")
     st.stop()
