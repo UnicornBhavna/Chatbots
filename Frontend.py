@@ -3,6 +3,7 @@ from sentence_transformers import SentenceTransformer
 import faiss, pickle, openai, os, numpy as np, time
 import requests
 import os
+import time
 
 
 # === Load API Key ===
@@ -34,13 +35,18 @@ def load_metadata():
 
 
 # === Constants ===
-# INDEX_PATH = "faiss.index"
-st.write(f"Starting FAISS load at {time.time() - start:.2f}s")
+start = time.time()
 faiss_index = load_index()
-st.write(f"FAISS loaded at {time.time() - start:.2f}s")
-# METADATA_PATH = "metadata.pkl"
+st.write(f"⏱ FAISS index loaded in {time.time() - start:.2f}s")
+
+start = time.time()
 metadata_store = load_metadata()
-st.write(f"Metadata loaded at {time.time() - start:.2f}s")
+st.write(f"⏱ Metadata loaded in {time.time() - start:.2f}s")
+
+start = time.time()
+embedding_model = load_model()
+st.write(f"⏱ Model loaded in {time.time() - start:.2f}s")
+
 MAX_REQUESTS_PER_HOUR = 5
 RATE_LIMIT_KEY = "rate_limit"
 
