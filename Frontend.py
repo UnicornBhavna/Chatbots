@@ -5,8 +5,6 @@ import requests
 import os
 import time
 
-start = time.time()
-
 
 # === Load API Key ===
 try:
