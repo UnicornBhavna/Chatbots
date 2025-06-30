@@ -1,6 +1,7 @@
 import streamlit as st
 from sentence_transformers import SentenceTransformer
 import faiss, pickle, openai, os, numpy as np, time
+import requests
 
 
 # === Load API Key ===
@@ -10,8 +11,20 @@ except KeyError:
     st.error("OpenAI API key not found. Please add it in Streamlit Secrets.")
     st.stop()
 
+
+# === Loading Files from Hugging Face ===
+
+@st.cache_resource
+def download_faiss_index():
+    url = "https://huggingface.co/datasets/Bhavna1998/ResumeBot/resolve/main/faiss.index"
+    r = requests.get(url)
+    with open("faiss.index", "wb") as f:
+        f.write(r.content)
+    return faiss.read_index("faiss.index")
+
+
 # === Constants ===
-INDEX_PATH = "faiss.index"
+# INDEX_PATH = "faiss.index"
 METADATA_PATH = "metadata.pkl"
 MAX_REQUESTS_PER_HOUR = 5
 RATE_LIMIT_KEY = "rate_limit"
