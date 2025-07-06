@@ -6,28 +6,47 @@ import openai
 import os
 import numpy as np
 import time
+import requests
 
 # === Streamlit Config ===
 st.set_page_config(page_title="Bhavna's Resume Bot", page_icon="📄")
 
 # === Constants ===
-INDEX_PATH = "faiss.index"
-METADATA_PATH = "metadata.pkl"
+HF_REPO = "Bhavna1998/BhavBot"
+FAISS_INDEX_FILE = "faiss.index"
+METADATA_FILE = "metadata.pkl"
 MAX_REQUESTS_PER_HOUR = 5
 RATE_LIMIT_KEY = "rate_limit"
+
+LOCAL_FAISS_PATH = f"./{FAISS_INDEX_FILE}"
+LOCAL_METADATA_PATH = f"./{METADATA_FILE}"
 
 # === Load OpenAI API Key securely ===
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
+# === Helper to download files from Hugging Face if not present locally ===
+def download_from_hf(filename):
+    url = f"https://huggingface.co/{HF_REPO}/resolve/main/{filename}"
+    if not os.path.exists(filename):
+        with st.spinner(f"Downloading {filename} from Hugging Face..."):
+            r = requests.get(url)
+            r.raise_for_status()
+            with open(filename, "wb") as f:
+                f.write(r.content)
+
+# Download files on app start if missing
+download_from_hf(FAISS_INDEX_FILE)
+download_from_hf(METADATA_FILE)
+
 # === Load FAISS index locally ===
 @st.cache_resource(show_spinner=False)
 def load_faiss_index():
-    return faiss.read_index(INDEX_PATH)
+    return faiss.read_index(LOCAL_FAISS_PATH)
 
 # === Load metadata locally ===
 @st.cache_resource(show_spinner=False)
 def load_metadata():
-    with open(METADATA_PATH, "rb") as f:
+    with open(LOCAL_METADATA_PATH, "rb") as f:
         return pickle.load(f)
 
 # === Load embedding model ===
