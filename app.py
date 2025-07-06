@@ -33,7 +33,7 @@ def load_metadata():
 # === Load embedding model ===
 @st.cache_resource(show_spinner=False)
 def load_model():
-    return SentenceTransformer("all-MiniLM-L6-v2")
+    return SentenceTransformer("all-MiniLM-L6-v2", use_auth_token=False)
 
 # === Rate limiting ===
 def check_rate_limit():
