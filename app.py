@@ -6,7 +6,6 @@ import openai
 import os
 import numpy as np
 import time
-import requests
 
 # === Streamlit Config ===
 st.set_page_config(page_title="Bhavna's Resume Bot", page_icon="📄")
@@ -20,16 +19,12 @@ RATE_LIMIT_KEY = "rate_limit"
 # === Load OpenAI API Key securely ===
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-# === Load FAISS index from remote and cache ===
+# === Load FAISS index locally ===
 @st.cache_resource(show_spinner=False)
-def download_faiss_index():
-    url = "https://huggingface.co/datasets/Bhavna1998/ResumeBot/resolve/main/faiss.index"
-    r = requests.get(url)
-    with open(INDEX_PATH, "wb") as f:
-        f.write(r.content)
+def load_faiss_index():
     return faiss.read_index(INDEX_PATH)
 
-# === Load local metadata ===
+# === Load metadata locally ===
 @st.cache_resource(show_spinner=False)
 def load_metadata():
     with open(METADATA_PATH, "rb") as f:
@@ -40,7 +35,7 @@ def load_metadata():
 def load_model():
     return SentenceTransformer("all-MiniLM-L6-v2")
 
-# === Check rate limit per session ===
+# === Rate limiting ===
 def check_rate_limit():
     now = time.time()
     data = st.session_state.get(RATE_LIMIT_KEY, {"count": 0, "start_time": now})
@@ -54,7 +49,7 @@ def check_rate_limit():
 
 # === Load assets ===
 with st.spinner("⏳ Loading FAISS index..."):
-    faiss_index = download_faiss_index()
+    faiss_index = load_faiss_index()
 with st.spinner("⏳ Loading metadata..."):
     metadata_store = load_metadata()
 with st.spinner("⏳ Loading embedding model..."):
