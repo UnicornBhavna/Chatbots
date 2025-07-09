@@ -2,7 +2,6 @@ import streamlit as st
 from sentence_transformers import SentenceTransformer
 import faiss
 import pickle
-import openai
 import os
 import numpy as np
 import time
