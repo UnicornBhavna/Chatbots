@@ -19,6 +19,11 @@ RATE_LIMIT_KEY = "rate_limit"
 # === OpenAI API Key ===
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
+# === General query detection ===
+def is_general_query(query):
+    general_phrases = ["hi", "hello", "hey", "how are you", "what’s up", "who are you", "tell me about yourself"]
+    return query.strip().lower() in general_phrases
+
 # === Load FAISS index ===
 @st.cache_resource(show_spinner=False)
 def load_faiss_index():
@@ -97,10 +102,27 @@ st.title("🤖 Bhavna's Resume Chatbot")
 st.markdown("Ask about Bhavna's experience, education, skills, or leadership roles.")
 
 query = st.text_input("📨 Ask a question about Bhavna's resume:")
-
 if query:
     if not check_rate_limit():
         st.warning(f"⚠️ You’ve hit the limit of {MAX_REQUESTS_PER_HOUR} questions/hour. Please wait and try again later.")
+    elif is_general_query(query):
+        with st.spinner("💬 Generating a friendly response..."):
+            try:
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful assistant who introduces Bhavna in a friendly tone."},
+                        {"role": "user", "content": query}
+                    ],
+                    max_tokens=150,
+                    temperature=0.5
+                )
+                answer = response.choices[0].message.content.strip()
+            except Exception as e:
+                answer = f"❌ Error: {e}"
+        st.markdown("### ✅ Answer:")
+        st.write(answer)
+
     else:
         with st.spinner("🔍 Searching relevant resume snippets..."):
             matched_chunks, scores, indices = similarity_search(query)
@@ -108,8 +130,9 @@ if query:
 
         with st.spinner("✍️ Generating answer..."):
             try:
-                t0 = time.time()
-                prompt = f"""Using the following resume snippets, answer the question below.
+                prompt = f"""You are Bhavna's resume assistant.
+
+Use the following resume snippets to answer the question below. If the question is general (e.g., a greeting or summary), you may answer from your own knowledge or provide a friendly response. Prefer the resume content when relevant.
 
 --- Resume Snippets ---
 {context}
@@ -117,19 +140,18 @@ if query:
 --- Question ---
 {query}
 
-Respond factually based only on the resume content. If the answer is not found in the resume, reply: "This information is not available in the resume."
+If the answer is not found in the resume and is not general, reply: "This information is not available in the resume."
 """
-                response = openai.chat.completions.create(
+                response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
                     messages=[
-                        {"role": "system", "content": "You are a helpful assistant..."},
+                        {"role": "system", "content": "You are a helpful assistant."},
                         {"role": "user", "content": prompt}
-                        ],
+                    ],
                     max_tokens=500,
                     temperature=0.2
-                    )
+                )
                 answer = response.choices[0].message.content.strip()
-                print(f"🧠 OpenAI response generated in {time.time() - t0:.2f} sec")
             except Exception as e:
                 answer = f"❌ Error generating answer: {e}"
                 print(f"Error during OpenAI call: {e}")
