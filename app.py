@@ -6,7 +6,9 @@ import openai
 import os
 import numpy as np
 import time
-from openai import OpenAI
+#from openai import OpenAI
+import openai
+
 
 # === Streamlit Config ===
 st.set_page_config(page_title="Bhavna's Resume Bot", page_icon="📄")
