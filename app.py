@@ -13,7 +13,7 @@ st.set_page_config(page_title="Bhavna's Resume Bot", page_icon="📄")
 # === Constants ===
 FAISS_INDEX_FILE = "faiss.index"
 METADATA_FILE = "metadata.pkl"
-MAX_REQUESTS_PER_HOUR = 8
+MAX_REQUESTS_PER_HOUR = 10
 RATE_LIMIT_KEY = "rate_limit"
 
 # === OpenAI API Key ===
