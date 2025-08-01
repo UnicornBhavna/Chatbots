@@ -13,7 +13,7 @@ st.set_page_config(page_title="Bhavna's Resume Bot", page_icon="📄")
 # === Constants ===
 FAISS_INDEX_FILE = "faiss.index"
 METADATA_FILE = "metadata.pkl"
-MAX_REQUESTS_PER_HOUR = 5
+MAX_REQUESTS_PER_HOUR = 8
 RATE_LIMIT_KEY = "rate_limit"
 
 # === OpenAI API Key ===
@@ -57,7 +57,7 @@ def load_model():
         raise RuntimeError("Failed to load SentenceTransformer model.")
 
 # === Similarity Search ===
-def similarity_search(query: str, k: int = 3):
+def similarity_search(query: str, k: int = 5):
     print("🔍 Running similarity search...")
     t0 = time.time()
     query_embedding = embedding_model.encode([query])
