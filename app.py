@@ -24,6 +24,12 @@ def is_general_query(query):
     general_phrases = ["hi", "hello", "hey", "how are you", "what’s up", "who are you", "tell me about yourself"]
     return query.strip().lower() in general_phrases
 
+# === Education ===
+def retrieve_all_education_chunks():
+    return [m for m in metadata_store if "university" in m.get("text", "").lower() 
+            or "education" in m.get("text", "").lower()]
+
+
 # === Load FAISS index ===
 @st.cache_resource(show_spinner=False)
 def load_faiss_index():
@@ -102,6 +108,7 @@ st.title("🤖 Bhavna's Resume Chatbot")
 st.markdown("Ask about Bhavna's experience, education, skills, or leadership roles.")
 
 query = st.text_input("📨 Ask a question about Bhavna's resume:")
+
 if query:
     if not check_rate_limit():
         st.warning(f"⚠️ You’ve hit the limit of {MAX_REQUESTS_PER_HOUR} questions/hour. Please wait and try again later.")
@@ -122,6 +129,9 @@ if query:
                 answer = f"❌ Error: {e}"
         st.markdown("### ✅ Answer:")
         st.write(answer)
+
+    elif "education" in query.lower():
+        matched_chunks = retrieve_all_education_chunks()
 
     else:
         with st.spinner("🔍 Searching relevant resume snippets..."):
