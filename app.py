@@ -115,7 +115,7 @@ if query:
                         {"role": "user", "content": query}
                     ],
                     max_tokens=150,
-                    temperature=0.5
+                    temperature=0.2
                 )
                 answer = response.choices[0].message.content.strip()
             except Exception as e:
