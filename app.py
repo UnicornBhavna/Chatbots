@@ -131,7 +131,7 @@ if query:
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
                     messages=[
-                        {"role": "system", "content": "You are a helpful assistant who introduces Bhavna in a friendly tone."},
+                        {"role": "system", "content": "You are a helpful assistant who introduces Bhavna in a friendly tone. Your name is BhavBot."},
                         {"role": "user", "content": query}
                     ],
                     max_tokens=150,
@@ -150,7 +150,7 @@ if query:
 
         with st.spinner("✍️ Generating answer..."):
             try:
-                prompt = f"""You are Bhavna's resume assistant.
+                prompt = f"""You are Bhavna's resume assistant. Your name is BhavBot.
 
 Use the following resume snippets to answer the question below. If the question is general (e.g., a greeting or summary), you may answer from your own knowledge or provide a friendly response. Prefer the resume content when relevant.
 
@@ -165,7 +165,7 @@ If the answer is not found in the resume and is not general, reply: "This inform
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
                     messages=[
-                        {"role": "system", "content": "You are a helpful assistant."},
+                        {"role": "system", "content": "You are a helpful assistant. Your name is BhavBot."},
                         {"role": "user", "content": prompt}
                     ],
                     max_tokens=500,
