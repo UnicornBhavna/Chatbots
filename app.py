@@ -8,7 +8,7 @@ import time
 import openai
 
 # === Streamlit Config ===
-st.set_page_config(page_title="Bhavna's Resume Bot", page_icon="📄")
+st.set_page_config(page_title="Bhavot - Bhavna's Resume Bot", page_icon="🤖")
 
 # === Constants ===
 FAISS_INDEX_FILE = "faiss.index"
@@ -64,7 +64,7 @@ def similarity_search(query: str, k: int = 5):
     query_embedding = query_embedding / np.linalg.norm(query_embedding, axis=1, keepdims=True)
 
     scores, indices = faiss_index.search(query_embedding.astype("float32"), k=k)
-    
+
     retrieved_chunks = []
     retrieved_scores = []
 
@@ -79,13 +79,17 @@ def similarity_search(query: str, k: int = 5):
         for ec in edu_chunks:
             if ec not in retrieved_chunks:
                 retrieved_chunks.append(ec)
-                retrieved_scores.append(0.0)  # Add dummy score for appended chunks
+                retrieved_scores.append(0.0)  # Dummy score
         print("🎓 Education-related query detected — merged all university chunks.")
 
     print(f"✅ Retrieved {len(retrieved_chunks)} chunks in {time.time() - t0:.2f}s")
+    
+    # Debugging: print retrieved chunks
+    print("\n=== 🔍 FAISS Retrieved Chunks ===")
+    for i, (chunk, score) in enumerate(zip(retrieved_chunks, retrieved_scores)):
+        print(f"[{i}] Score: {score:.4f}\n{chunk[:200]}...\n")
+
     return retrieved_chunks, retrieved_scores, indices
-
-
 
 # === Rate Limiting ===
 def check_rate_limit():
@@ -113,46 +117,47 @@ with st.spinner("⏳ Loading embedding model (may take time on first run)..."):
         st.error("❌ Failed to load embedding model. Please try again later.")
         st.stop()
 
-
-
-
 # === UI ===
-st.title("🤖 Bhavna's Resume Chatbot")
-st.markdown("Ask about Bhavna's experience, education, skills, or leadership roles.")
+st.title("🤖 Bhavot - Bhavna's Resume Chatbot")
+st.markdown("Ask about Bhavna's experience, education, skills, or leadership roles.  
+💡 *Tip: I’m Bhavot, your friendly resume assistant!*")
 
 query = st.text_input("📨 Ask a question about Bhavna's resume:")
 
 if query:
     if not check_rate_limit():
         st.warning(f"⚠️ You’ve hit the limit of {MAX_REQUESTS_PER_HOUR} questions/hour. Please wait and try again later.")
+    
     elif is_general_query(query):
         with st.spinner("💬 Generating a friendly response..."):
             try:
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
                     messages=[
-                        {"role": "system", "content": "You are a helpful assistant who introduces Bhavna in a friendly tone. Your name is BhavBot."},
+                        {"role": "system", "content": "You are Bhavot, a friendly AI assistant who answers questions about Bhavna's resume and introduces yourself as Bhavot when asked who you are."},
                         {"role": "user", "content": query}
                     ],
                     max_tokens=150,
-                    temperature=0.2
+                    temperature=0.3
                 )
                 answer = response.choices[0].message.content.strip()
             except Exception as e:
                 answer = f"❌ Error: {e}"
         st.markdown("### ✅ Answer:")
         st.write(answer)
-        
+
     else:
         with st.spinner("🔍 Searching relevant resume snippets..."):
             matched_chunks, scores, indices = similarity_search(query)
-            context = "\n\n---\n\n".join([chunk.get("text", "") for chunk in matched_chunks])
+            context = "\n\n---\n\n".join(matched_chunks)
 
         with st.spinner("✍️ Generating answer..."):
             try:
-                prompt = f"""You are Bhavna's resume assistant. Your name is BhavBot.
+                prompt = f"""You are Bhavot, Bhavna's AI resume assistant.
 
-Use the following resume snippets to answer the question below. If the question is general (e.g., a greeting or summary), you may answer from your own knowledge or provide a friendly response. Prefer the resume content when relevant.
+You ONLY answer using the provided resume snippets.  
+If asked who you are, you introduce yourself as Bhavot, Bhavna's friendly AI assistant.  
+Do not make up information.
 
 --- Resume Snippets ---
 {context}
@@ -160,12 +165,12 @@ Use the following resume snippets to answer the question below. If the question 
 --- Question ---
 {query}
 
-If the answer is not found in the resume and is not general, reply: "This information is not under my scope, please ask me something else or google it yourself :D"
+If the answer is not found in the resume, reply: "This information is not available in the resume."
 """
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
                     messages=[
-                        {"role": "system", "content": "You are a helpful assistant. Your name is BhavBot."},
+                        {"role": "system", "content": "You are Bhavot, a friendly AI assistant who answers based only on Bhavna's resume."},
                         {"role": "user", "content": prompt}
                     ],
                     max_tokens=500,
@@ -182,4 +187,4 @@ If the answer is not found in the resume and is not general, reply: "This inform
         with st.expander("📄 Show Resume Snippets Used"):
             for chunk, score in zip(matched_chunks, scores):
                 st.markdown(f"**Score**: {score:.4f}")
-                st.code(chunk.get("text", ""))
+                st.code(chunk)
