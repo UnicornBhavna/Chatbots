@@ -62,20 +62,27 @@ def load_model():
         print(f"❌ Error loading model: {e}")
         raise RuntimeError("Failed to load SentenceTransformer model.")
 
-# === Similarity Search ===
+# === Similarity Search with Education Fallback ===
 def similarity_search(query: str, k: int = 5):
     print("🔍 Running similarity search...")
     t0 = time.time()
     query_embedding = embedding_model.encode([query])
     query_embedding = query_embedding / np.linalg.norm(query_embedding, axis=1, keepdims=True)
+    
     scores, indices = faiss_index.search(query_embedding.astype("float32"), k=k)
+    retrieved_chunks = [metadata_store[idx].get("text", "") for idx in indices[0] if 0 <= idx < len(metadata_store)]
+    
+    # ✅ If query mentions education, force-append all education chunks
+    if any(word in query.lower() for word in ["education", "university", "degree", "college"]):
+        edu_chunks = [m["text"] for m in metadata_store if "university" in m["text"].lower() or "bachelor" in m["text"].lower()]
+        # Avoid duplicates
+        for ec in edu_chunks:
+            if ec not in retrieved_chunks:
+                retrieved_chunks.append(ec)
+        print("🎓 Education-related query detected — merged all university chunks.")
 
-    results = []
-    for i in indices[0]:
-        if 0 <= i < len(metadata_store):
-            results.append(metadata_store[i])
-    print(f"✅ Search done in {time.time() - t0:.2f} sec")
-    return results, scores[0], indices[0]
+    print(f"✅ Retrieved {len(retrieved_chunks)} chunks in {time.time()-t0:.2f}s")
+    return retrieved_chunks
 
 # === Rate Limiting ===
 def check_rate_limit():
