@@ -119,8 +119,7 @@ with st.spinner("⏳ Loading embedding model (may take time on first run)..."):
 
 # === UI ===
 st.title("🤖 Bhavot - Bhavna's Resume Chatbot")
-st.markdown("Ask about Bhavna's experience, education, skills, or leadership roles.  
-💡 *Tip: I’m Bhavot, your friendly resume assistant!*")
+st.markdown("Ask about Bhavna's experience, education, skills, or leadership roles. 💡 *Tip: I’m Bhavot, your friendly resume assistant!*")
 
 query = st.text_input("📨 Ask a question about Bhavna's resume:")
 
