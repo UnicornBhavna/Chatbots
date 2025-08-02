@@ -8,7 +8,7 @@ import time
 import openai
 
 # === Streamlit Config ===
-st.set_page_config(page_title="Bhavot - Bhavna's Resume Bot", page_icon="🤖")
+st.set_page_config(page_title="BhavBot - Bhavna's Resume Bot", page_icon="🤖")
 
 # === Constants ===
 FAISS_INDEX_FILE = "faiss.index"
@@ -57,7 +57,7 @@ def load_model():
         raise RuntimeError("Failed to load SentenceTransformer model.")
 
 # === Similarity Search with Education Fallback ===
-def similarity_search(query: str, k: int = 5):
+def similarity_search(query: str, k: int = 10):
     print("🔍 Running similarity search...")
     t0 = time.time()
     query_embedding = embedding_model.encode([query])
@@ -118,8 +118,8 @@ with st.spinner("⏳ Loading embedding model (may take time on first run)..."):
         st.stop()
 
 # === UI ===
-st.title("🤖 Bhavot - Bhavna's Resume Chatbot")
-st.markdown("Ask about Bhavna's experience, education, skills, or leadership roles. 💡 *Tip: I’m Bhavot, your friendly resume assistant!*")
+st.title("🤖 BhavBot - Bhavna's Resume Chatbot")
+st.markdown("Ask about Bhavna's experience, education, skills, or leadership roles. 💡 *Tip: I’m BhavBot, your friendly resume assistant!*")
 
 query = st.text_input("📨 Ask a question about Bhavna's resume:")
 
@@ -133,7 +133,7 @@ if query:
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
                     messages=[
-                        {"role": "system", "content": "You are Bhavot, a friendly AI assistant who answers questions about Bhavna's resume and introduces yourself as Bhavot when asked who you are."},
+                        {"role": "system", "content": "You are BhavBot, a friendly AI assistant who answers questions about Bhavna's resume and introduces yourself as BhavBot when asked who you are."},
                         {"role": "user", "content": query}
                     ],
                     max_tokens=150,
@@ -152,10 +152,10 @@ if query:
 
         with st.spinner("✍️ Generating answer..."):
             try:
-                prompt = f"""You are Bhavot, Bhavna's AI resume assistant.
+                prompt = f"""You are BhavBot, Bhavna's AI resume assistant.
 
 You ONLY answer using the provided resume snippets.  
-If asked who you are, you introduce yourself as Bhavot, Bhavna's friendly AI assistant.  
+If asked who you are, you introduce yourself as BhavBot, Bhavna's friendly AI assistant.  
 Do not make up information.
 
 --- Resume Snippets ---
@@ -169,7 +169,7 @@ If the answer is not found in the resume, reply: "This information is not availa
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
                     messages=[
-                        {"role": "system", "content": "You are Bhavot, a friendly AI assistant who answers based only on Bhavna's resume."},
+                        {"role": "system", "content": "You are BhavBot, a friendly AI assistant who answers based only on Bhavna's resume."},
                         {"role": "user", "content": prompt}
                     ],
                     max_tokens=500,
