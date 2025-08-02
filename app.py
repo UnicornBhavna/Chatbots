@@ -24,12 +24,6 @@ def is_general_query(query):
     general_phrases = ["hi", "hello", "hey", "how are you", "what’s up", "who are you", "tell me about yourself"]
     return query.strip().lower() in general_phrases
 
-# === Education ===
-def retrieve_all_education_chunks():
-    return [m for m in metadata_store if "university" in m.get("text", "").lower() 
-            or "education" in m.get("text", "").lower()]
-
-
 # === Load FAISS index ===
 @st.cache_resource(show_spinner=False)
 def load_faiss_index():
@@ -68,21 +62,30 @@ def similarity_search(query: str, k: int = 5):
     t0 = time.time()
     query_embedding = embedding_model.encode([query])
     query_embedding = query_embedding / np.linalg.norm(query_embedding, axis=1, keepdims=True)
-    
+
     scores, indices = faiss_index.search(query_embedding.astype("float32"), k=k)
-    retrieved_chunks = [metadata_store[idx].get("text", "") for idx in indices[0] if 0 <= idx < len(metadata_store)]
     
-    # ✅ If query mentions education, force-append all education chunks
+    retrieved_chunks = []
+    retrieved_scores = []
+
+    for score, idx in zip(scores[0], indices[0]):
+        if 0 <= idx < len(metadata_store):
+            retrieved_chunks.append(metadata_store[idx].get("text", ""))
+            retrieved_scores.append(score)
+
+    # ✅ If query is education-related, append all university chunks
     if any(word in query.lower() for word in ["education", "university", "degree", "college"]):
         edu_chunks = [m["text"] for m in metadata_store if "university" in m["text"].lower() or "bachelor" in m["text"].lower()]
-        # Avoid duplicates
         for ec in edu_chunks:
             if ec not in retrieved_chunks:
                 retrieved_chunks.append(ec)
+                retrieved_scores.append(0.0)  # Add dummy score for appended chunks
         print("🎓 Education-related query detected — merged all university chunks.")
 
-    print(f"✅ Retrieved {len(retrieved_chunks)} chunks in {time.time()-t0:.2f}s")
-    return retrieved_chunks
+    print(f"✅ Retrieved {len(retrieved_chunks)} chunks in {time.time() - t0:.2f}s")
+    return retrieved_chunks, retrieved_scores, indices
+
+
 
 # === Rate Limiting ===
 def check_rate_limit():
@@ -110,6 +113,9 @@ with st.spinner("⏳ Loading embedding model (may take time on first run)..."):
         st.error("❌ Failed to load embedding model. Please try again later.")
         st.stop()
 
+
+
+
 # === UI ===
 st.title("🤖 Bhavna's Resume Chatbot")
 st.markdown("Ask about Bhavna's experience, education, skills, or leadership roles.")
@@ -136,10 +142,7 @@ if query:
                 answer = f"❌ Error: {e}"
         st.markdown("### ✅ Answer:")
         st.write(answer)
-
-    elif "education" in query.lower():
-        matched_chunks = retrieve_all_education_chunks()
-
+        
     else:
         with st.spinner("🔍 Searching relevant resume snippets..."):
             matched_chunks, scores, indices = similarity_search(query)
@@ -157,7 +160,7 @@ Use the following resume snippets to answer the question below. If the question 
 --- Question ---
 {query}
 
-If the answer is not found in the resume and is not general, reply: "This information is not available in the resume."
+If the answer is not found in the resume and is not general, reply: "This information is not under my scope, please ask me something else or google it yourself :D"
 """
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
