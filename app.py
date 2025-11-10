@@ -112,7 +112,7 @@ def check_rate_limit():
 
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
-    st.image("https://github.com/UnicornBhavna/Chatbots/blob/main/pic.jpeg", caption="Bhavna Lal", width=180)
+    st.image("https://raw.githubusercontent.com/UnicornBhavna/Chatbots/blob/main/pic.jpeg", caption="Bhavna Lal", width=180)
 
 
 # === Custom Background (Baby Pink) ===
