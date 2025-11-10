@@ -114,24 +114,25 @@ col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     st.image("https://raw.githubusercontent.com/UnicornBhavna/Chatbots/blob/main/pic.jpeg", caption="Bhavna Lal", width=180)
 
+# Inject custom CSS for full-page background color
 
-# === Custom Background (Baby Pink) ===
-st.markdown(
-    """
-    <style>
-    /* Set background color */
-    .stApp {
-        background-color: #FFEBEF;  /* Baby Light Pink */
+page_bg = """
+<style>
+    body {
+        background-color: #FFE4E1; /* baby light pink */
     }
-
-    /* Optional: make text darker for better readability */
-    body, p, div, h1, h2, h3 {
-        color: #2b2b2b;
+    [data-testid="stAppViewContainer"] {
+        background-color: #FFE4E1 !important;
     }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+    [data-testid="stHeader"] {
+        background-color: #FFE4E1 !important;
+    }
+    [data-testid="stSidebar"] {
+        background-color: #FFE4E1 !important;
+    }
+</style>
+"""
+st.markdown(page_bg, unsafe_allow_html=True)
 
 
 with st.spinner("⏳ Loading FAISS index..."):
