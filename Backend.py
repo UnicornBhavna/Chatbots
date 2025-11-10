@@ -31,6 +31,14 @@ def extract_contact_info(text):
     match = re.search(r'CONTACT\s*●\s*([A-Za-z ]+)', text)
     if match:
         name = match.group(1).strip()
+        
+    # Extract Chatbot link (any streamlit.app URL)
+    chatbot_match = re.search(r'https?://[^\s]*streamlit\.app[^\s]*', text)
+    chatbot_link = chatbot_match.group(0).strip() if chatbot_match else ""
+    
+    # Extract LinkedIn link
+    linkedin_match = re.search(r'https?://[^\s]*linkedin\.com[^\s]*', text)
+    linkedin_link = linkedin_match.group(0).strip() if linkedin_match else ""
 
     contact_info["name"] = name
     contact_info["emails"] = list(set(email_matches))
@@ -63,9 +71,7 @@ def extract_current_position(text):
 # === Summary Bio ===
 def generate_summary():
     return (
-        "Bhavna is a Data Science Intern at Zurich Insurance in Singapore and currently pursuing her Master's in Business Analytics at the National University of Singapore. "
-        "She previously worked at EXL Service and Zenatix Solutions, and holds a Bachelor's in Electrical Engineering from PEC University of Technology. "
-        "Her expertise spans analytics, machine learning, Python, SQL, and Power BI. She has led impactful projects across domains like fraud detection, GenAI, and insurance analytics."
+        "Bhavna is an analytics professional with a Master in Business Analytics from the National University of Singapore and experience in data-driven problem solving across insurance and consulting. At Zurich Insurance and EXL, I built automated dashboards, streamlined reporting pipelines, and delivered insights that improved efficiency and business decision-making. With a strong foundation in machine learning from my academic work, I’m passionate about applying data, technology, and innovation to create practical business impact."
     )
 
 # === Chunk Creator ===

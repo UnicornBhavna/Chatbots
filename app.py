@@ -17,7 +17,13 @@ MAX_REQUESTS_PER_HOUR = 10
 RATE_LIMIT_KEY = "rate_limit"
 
 # === OpenAI API Key ===
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+#openai.api_key = st.secrets["OPENAI_API_KEY"]
+# === Load API Key ===
+openai.api_key = "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"
+if not openai.api_key:
+    st.error("OpenAI API key not found. Please add it in Streamlit Secrets or environment variables.")
+    st.stop()
+
 
 # === General query detection ===
 def is_general_query(query):
@@ -104,6 +110,31 @@ def check_rate_limit():
     return True
 
 # === Load all resources ===
+
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    st.image("/Users/lokebankai/Documents/GitHub/Bhavbot/pic.jpeg", caption="Bhavna Lal", width=180)
+
+
+# === Custom Background (Baby Pink) ===
+st.markdown(
+    """
+    <style>
+    /* Set background color */
+    .stApp {
+        background-color: #FFEBEF;  /* Baby Light Pink */
+    }
+
+    /* Optional: make text darker for better readability */
+    body, p, div, h1, h2, h3 {
+        color: #2b2b2b;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
 with st.spinner("⏳ Loading FAISS index..."):
     faiss_index = load_faiss_index()
 
@@ -118,7 +149,7 @@ with st.spinner("⏳ Loading embedding model (may take time on first run)..."):
         st.stop()
 
 # === UI ===
-st.title("🤖 BhavBot - Bhavna's Resume Chatbot")
+st.title("👩‍💻 BhavBot - Bhavna's Resume Chatbot")
 st.markdown("Ask about Bhavna's experience, education, skills, or leadership roles. 💡 *Tip: I’m BhavBot, your friendly resume assistant!*")
 
 query = st.text_input("📨 Ask a question about Bhavna's resume:")
@@ -164,7 +195,7 @@ Do not make up information.
 --- Question ---
 {query}
 
-If the answer is not found in the resume, reply: "This information is not available in the resume."
+If the answer is not found in the resume, reply: "This information is not available in the resume. Please contact Bhavna directly for more details."
 """
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
@@ -183,7 +214,8 @@ If the answer is not found in the resume, reply: "This information is not availa
         st.markdown("### ✅ Answer:")
         st.write(answer)
 
-        with st.expander("📄 Show Resume Snippets Used"):
-            for chunk, score in zip(matched_chunks, scores):
-                st.markdown(f"**Score**: {score:.4f}")
-                st.code(chunk)
+#        with st.expander("📄 Show Resume Snippets Used"):
+#            for chunk, score in zip(matched_chunks, scores):
+#                st.markdown(f"**Score**: {score:.4f}")
+#                st.code(chunk)
+
