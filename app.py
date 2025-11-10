@@ -17,9 +17,8 @@ MAX_REQUESTS_PER_HOUR = 10
 RATE_LIMIT_KEY = "rate_limit"
 
 # === OpenAI API Key ===
-#openai.api_key = st.secrets["OPENAI_API_KEY"]
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 # === Load API Key ===
-openai.api_key = "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"
 if not openai.api_key:
     st.error("OpenAI API key not found. Please add it in Streamlit Secrets or environment variables.")
     st.stop()
@@ -113,7 +112,7 @@ def check_rate_limit():
 
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
-    st.image("/Users/lokebankai/Documents/GitHub/Bhavbot/pic.jpeg", caption="Bhavna Lal", width=180)
+    st.image("https://github.com/UnicornBhavna/Chatbots/blob/main/pic.jpeg", caption="Bhavna Lal", width=180)
 
 
 # === Custom Background (Baby Pink) ===
