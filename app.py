@@ -168,7 +168,7 @@ if query:
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
                     messages=[
-                        {"role": "system", "content": "You are BhavBot, a friendly AI assistant who answers questions about Bhavna's resume and introduces yourself as BhavBot when asked who you are. If asked for your name, reply with 'Bhavna'."},
+                        {"role": "system", "content": "You are BhavBot, a friendly AI assistant who answers questions about Bhavna's resume and introduces yourself as BhavBot when asked who you are or what your name is. If asked for your owner, reply with 'Bhavna'."},
                         {"role": "user", "content": query}
                     ],
                     max_tokens=150,
