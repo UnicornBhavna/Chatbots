@@ -250,22 +250,8 @@ else:
     st.error("⚠️ Could not load the PDF from GitHub. Please check the URL.")
 
 st.download_button(
-    label="📄 Download PDF",
+    label="📄 Download Resume (PDF)",
     data=pdf_bytes,
     file_name="Bhavna_Resume.pdf",
     mime="application/pdf"
-)
-
-st.markdown(
-    """
-    <style>
-    .stDownloadButton button {
-        background-color: #FFC0CB;
-        color: purple;
-        border-radius: 10px;
-        font-weight: bold;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
 )
