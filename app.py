@@ -18,6 +18,7 @@ RATE_LIMIT_KEY = "rate_limit"
 
 # === OpenAI API Key ===
 openai.api_key = st.secrets["OPENAI_API_KEY"]
+
 # === Load API Key ===
 if not openai.api_key:
     st.error("OpenAI API key not found. Please add it in Streamlit Secrets or environment variables.")
@@ -155,12 +156,13 @@ st.markdown("Ask about Bhavna's experience, education, skills, or leadership rol
 query = st.text_input("📨 Ask a question about Bhavna's resume:")
 
 if query:
+
     if not check_rate_limit():
         st.warning(f"⚠️ You’ve hit the limit of {MAX_REQUESTS_PER_HOUR} questions/hour. Please wait and try again later.")
 
     elif is_name_query(query):
-    st.markdown("### ✅ Answer:")
-    st.write("Bhavna")
+        st.markdown("### ✅ Answer:")
+        st.write("Bhavna")
 
 
     elif is_general_query(query):
