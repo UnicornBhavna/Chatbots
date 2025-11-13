@@ -7,6 +7,7 @@ import numpy as np
 import time
 import openai
 from io import BytesIO
+import requests
 
 # === Streamlit Config ===
 st.set_page_config(page_title="BhavBot - Bhavna's Resume Bot", page_icon="🤖")
@@ -260,7 +261,7 @@ st.markdown(
     <style>
     .stDownloadButton button {
         background-color: #FFC0CB;
-        color: black;
+        color: purple;
         border-radius: 10px;
         font-weight: bold;
     }
