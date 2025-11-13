@@ -157,14 +157,19 @@ query = st.text_input("📨 Ask a question about Bhavna's resume:")
 if query:
     if not check_rate_limit():
         st.warning(f"⚠️ You’ve hit the limit of {MAX_REQUESTS_PER_HOUR} questions/hour. Please wait and try again later.")
-    
+
+    elif is_name_query(query):
+    st.markdown("### ✅ Answer:")
+    st.write("Bhavna")
+
+
     elif is_general_query(query):
         with st.spinner("💬 Generating a friendly response..."):
             try:
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
                     messages=[
-                        {"role": "system", "content": "You are BhavBot, a friendly AI assistant who answers questions about Bhavna's resume and introduces yourself as BhavBot when asked who you are."},
+                        {"role": "system", "content": "You are BhavBot, a friendly AI assistant who answers questions about Bhavna's resume and introduces yourself as BhavBot when asked who you are. If asked for your name, reply with 'Bhavna'."},
                         {"role": "user", "content": query}
                     ],
                     max_tokens=150,
@@ -219,3 +224,31 @@ If the answer is not found in the resume, reply: "This information is not availa
 #                st.markdown(f"**Score**: {score:.4f}")
 #                st.code(chunk)
 
+
+
+## Download PDF
+file_path = "https://raw.githubusercontent.com/UnicornBhavna/Chatbots/main/Bhavna.pdf"
+
+with open(file_path, "rb") as pdf_file:
+    pdf_bytes = pdf_file.read()
+
+st.download_button(
+    label="📄 Download PDF",
+    data=pdf_bytes,
+    file_name="Bhavna_Resume.pdf",
+    mime="application/pdf"
+)
+
+st.markdown(
+    """
+    <style>
+    .stDownloadButton button {
+        background-color: #FFC0CB;
+        color: black;
+        border-radius: 10px;
+        font-weight: bold;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
