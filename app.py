@@ -29,7 +29,7 @@ if not openai.api_key:
 
 # === General query detection ===
 def is_general_query(query):
-    general_phrases = ["hi", "hello", "hey", "how are you", "what’s up", "who are you", "tell me about yourself", "what is your name", "name"]
+    general_phrases = ["hi", "hello", "hey", "how are you", "what’s up", "who are you", "tell me about yourself", "what is your name", "name", "owner", "who is your owner", "who created you", "who made you"]
     return query.strip().lower() in general_phrases
 
 # === Load FAISS index ===
