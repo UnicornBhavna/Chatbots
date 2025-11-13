@@ -162,11 +162,6 @@ if query:
     if not check_rate_limit():
         st.warning(f"⚠️ You’ve hit the limit of {MAX_REQUESTS_PER_HOUR} questions/hour. Please wait and try again later.")
 
-    elif is_name_query(query):
-        st.markdown("### ✅ Answer:")
-        st.write("Bhavna")
-
-
     elif is_general_query(query):
         with st.spinner("💬 Generating a friendly response..."):
             try:
