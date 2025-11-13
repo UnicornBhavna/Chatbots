@@ -6,6 +6,7 @@ import os
 import numpy as np
 import time
 import openai
+from io import BytesIO
 
 # === Streamlit Config ===
 st.set_page_config(page_title="BhavBot - Bhavna's Resume Bot", page_icon="🤖")
@@ -229,10 +230,23 @@ If the answer is not found in the resume, reply: "This information is not availa
 
 
 ## Download PDF
-file_path = "https://raw.githubusercontent.com/UnicornBhavna/Chatbots/main/Bhavna.pdf"
 
-with open(file_path, "rb") as pdf_file:
-    pdf_bytes = pdf_file.read()
+url = "https://raw.githubusercontent.com/UnicornBhavna/Chatbots/main/Bhavna.pdf"
+
+# Fetch PDF bytes
+response = requests.get(url)
+
+if response.status_code == 200:
+    pdf_bytes = BytesIO(response.content)
+
+    st.download_button(
+        label="📄 Download Resume (PDF)",
+        data=pdf_bytes,
+        file_name="Bhavna_Resume.pdf",
+        mime="application/pdf"
+    )
+else:
+    st.error("⚠️ Could not load the PDF from GitHub. Please check the URL.")
 
 st.download_button(
     label="📄 Download PDF",
