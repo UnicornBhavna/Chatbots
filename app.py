@@ -248,10 +248,3 @@ if response.status_code == 200:
     )
 else:
     st.error("⚠️ Could not load the PDF from GitHub. Please check the URL.")
-
-st.download_button(
-    label="📄 Download Resume (PDF)",
-    data=pdf_bytes,
-    file_name="Bhavna_Resume.pdf",
-    mime="application/pdf"
-)
