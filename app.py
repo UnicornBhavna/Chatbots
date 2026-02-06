@@ -32,6 +32,21 @@ def is_general_query(query):
     general_phrases = ["hi", "hello", "hey", "how are you", "what’s up", "who are you", "tell me about yourself", "what is your name", "name", "owner", "who is your owner", "who created you", "who made you"]
     return query.strip().lower() in general_phrases
 
+def is_internship_query(query: str) -> bool:
+    keywords = ["intern", "internship", "interned", "interning"]
+    return any(k in query.lower() for k in keywords)
+
+
+def extract_year(text: str) -> int:
+    years = re.findall(r"(20\d{2})", text)
+    return max(map(int, years)) if years else 0
+
+def is_linkedin_query(query: str) -> bool:
+    keywords = ["linkedin", "linked in", "profile"]
+    return any(k in query.lower() for k in keywords)
+
+
+
 # === Load FAISS index ===
 @st.cache_resource(show_spinner=False)
 def load_faiss_index():
@@ -92,8 +107,26 @@ def similarity_search(query: str, k: int = 10):
         print("🎓 Education-related query detected — merged all university chunks.")
 
     print(f"✅ Retrieved {len(retrieved_chunks)} chunks in {time.time() - t0:.2f}s")
+
+    # 🔥 Internship recency boost
+    if is_internship_query(query):
+        internship_chunks = list(zip(retrieved_chunks, retrieved_scores))
+
+        internship_chunks.sort(
+            key=lambda x: extract_year(x[0]),
+            reverse=True  # most recent first
+        )
+
+        retrieved_chunks = [c for c, _ in internship_chunks]
+        retrieved_scores = [s for _, s in internship_chunks]
+
+        print("🆙 Internship query detected — boosted recent internships.")
+
     
     return retrieved_chunks, retrieved_scores, indices
+
+
+
 
     
 
@@ -165,6 +198,14 @@ if query:
 
     if not check_rate_limit():
         st.warning(f"⚠️ You’ve hit the limit of {MAX_REQUESTS_PER_HOUR} questions/hour. Please wait and try again later.")
+
+    elif is_linkedin_query(query):
+    st.markdown("### ✅ Answer:")
+    st.markdown(
+        "🔗 You can connect with Bhavna on LinkedIn here:\n\n"
+        "[https://www.linkedin.com/in/bhavna-lal/](https://www.linkedin.com/in/bhavna-lal/)"
+    )
+
 
     elif is_general_query(query):
         with st.spinner("💬 Generating a friendly response..."):
