@@ -200,11 +200,10 @@ if query:
         st.warning(f"⚠️ You’ve hit the limit of {MAX_REQUESTS_PER_HOUR} questions/hour. Please wait and try again later.")
 
     elif is_linkedin_query(query):
-    st.markdown("### ✅ Answer:")
-    st.markdown(
-        "🔗 You can connect with Bhavna on LinkedIn here:\n\n"
-        "[https://www.linkedin.com/in/bhavna-lal/](https://www.linkedin.com/in/bhavna-lal/)"
-    )
+        st.markdown("### ✅ Answer:")
+        
+        st.markdown("🔗 You can connect with Bhavna on LinkedIn here:\n\n"
+            "[https://www.linkedin.com/in/bhavna-lal/](https://www.linkedin.com/in/bhavna-lal/)")
 
 
     elif is_general_query(query):
