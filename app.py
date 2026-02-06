@@ -228,15 +228,13 @@ if query:
         with st.spinner("🔍 Searching relevant resume snippets..."):
             if is_internship_query(query):
                 matched_chunks = get_forced_internship_chunks()
-            if not matched_chunks:
-                context = ""
+                if not matched_chunks:
+                    context = ""
+                else:
+                    context = "\n\n---\n\n".join(matched_chunks)
             else:
+                matched_chunks, scores, indices = similarity_search(query)
                 context = "\n\n---\n\n".join(matched_chunks)
-
-        else:
-            matched_chunks, scores, indices = similarity_search(query)
-            context = "\n\n---\n\n".join(matched_chunks)
-
         with st.spinner("✍️ Generating answer..."):
             try:
                 prompt = f"""You are BhavBot, Bhavna's AI resume assistant.
