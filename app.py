@@ -34,7 +34,7 @@ def is_general_query(query):
 
 # === Load FAISS index ===
 @st.cache_resource(show_spinner=False)
-def load_faiss_index(_version="v2"):
+def load_faiss_index():
     print("🔧 Loading FAISS index...")
     t0 = time.time()
     index = faiss.read_index(FAISS_INDEX_FILE)
@@ -43,7 +43,7 @@ def load_faiss_index(_version="v2"):
 
 # === Load metadata ===
 @st.cache_resource(show_spinner=False)
-def load_metadata(_version="v2"):
+def load_metadata():
     print("📚 Loading metadata...")
     t0 = time.time()
     with open(METADATA_FILE, "rb") as f:
