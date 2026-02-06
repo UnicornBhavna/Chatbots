@@ -41,6 +41,38 @@ def is_linkedin_query(query: str) -> bool:
     keywords = ["linkedin", "linked in", "profile"]
     return any(k in query.lower() for k in keywords)
 
+def is_contact_query(query: str) -> bool:
+    keywords = [
+        "contact",
+        "email",
+        "phone",
+        "reach",
+        "get in touch",
+        "connect",
+        "how can i contact",
+        "how to contact"
+    ]
+    q = query.lower()
+    return any(k in q for k in keywords)
+
+
+def get_contact_chunks():
+    contact_keywords = ["email", "phone", "linkedin", "contact"]
+
+    chunks = []
+    for m in metadata_store:
+        text = m.get("text", "")
+        if not isinstance(text, str):
+            continue
+
+        lower_text = text.lower()
+        if any(k in lower_text for k in contact_keywords):
+            chunks.append(text)
+
+    return list(dict.fromkeys(chunks))  # dedupe
+
+
+
 # === Load FAISS index ===
 @st.cache_resource(show_spinner=False)
 def load_faiss_index():
@@ -200,7 +232,32 @@ if query:
         st.markdown("🔗 You can connect with Bhavna on LinkedIn here:\n\n"
             "[https://www.linkedin.com/in/bhavna-lal/](https://www.linkedin.com/in/bhavna-lal/)")
 
+    elif is_contact_query(query):
+        contact_chunks = get_contact_chunks()
+        if not contact_chunks:
+            st.markdown("### ✅ Answer:")
+            st.write("Contact information is not available in the resume. Please reach out to Bhavna via LinkedIn.")
+        else:
+            context = "\n\n---\n\n".join(contact_chunks)
+            
+            prompt = f"""You are BhavBot, Bhavna's AI resume assistant.
+            You ONLY answer using the provided resume snippets.
+            Extract and present Bhavna's contact information clearly.
+            Do not invent or modify any contact details.
+            --- Resume Snippets ---
+            {context}
+            --- Question ---
+            {query}"""
 
+            response = openai.ChatCompletion.create(model="gpt-3.5-turbo",
+                                                    messages=[
+                                                        {"role": "system", "content": "You are BhavBot, a resume assistant. You must not guess contact details."},
+                                                        {"role": "user", "content": prompt}],
+                                                    max_tokens=200,
+                                                    temperature=0.0)
+            st.markdown("### ✅ Answer:")
+            st.write(response.choices[0].message.content.strip())
+        
     elif is_general_query(query):
         with st.spinner("💬 Generating a friendly response..."):
             try:
