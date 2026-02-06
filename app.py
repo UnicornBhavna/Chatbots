@@ -142,7 +142,7 @@ def similarity_search(query: str, k: int = 10):
     return retrieved_chunks, retrieved_scores, indices
 
 def get_forced_internship_chunks():
-    priority_companies = ["zurich insurance", "zenatix"]
+    priority_companies = ["Zurich Insurance", "Zenatix"]
     chunks = []
 
     for m in metadata_store:
