@@ -131,6 +131,11 @@ def check_rate_limit():
     st.session_state[RATE_LIMIT_KEY] = data
     return True
 
+
+st.write("FAISS vectors:", faiss_index.ntotal)
+st.write("Metadata entries:", len(metadata_store))
+
+
 # === Load all resources ===
 
 col1, col2, col3 = st.columns([1, 2, 1])
