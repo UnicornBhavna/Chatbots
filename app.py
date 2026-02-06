@@ -109,17 +109,20 @@ def similarity_search(query: str, k: int = 10):
 
     return retrieved_chunks, retrieved_scores, indices
 
-
 def get_forced_internship_chunks():
     priority_companies = ["zurich", "zenatix"]
     chunks = []
 
-    for company in priority_companies:
-        for m in metadata_store:
-            text = m.get("text", "")
-            if isinstance(text, str) and company in text.lower():
-                chunks.append(text)
-    return chunks
+    for m in metadata_store:
+        text = m.get("text", "")
+        if not isinstance(text, str):
+            continue
+
+        lower_text = text.lower()
+        if any(company in lower_text for company in priority_companies):
+            chunks.append(text)
+
+    return list(dict.fromkeys(chunks))  # remove duplicates, keep order
 
 
 # === Rate Limiting ===
@@ -220,6 +223,15 @@ if query:
         with st.spinner("🔍 Searching relevant resume snippets..."):
             matched_chunks, scores, indices = similarity_search(query)
             context = "\n\n---\n\n".join(matched_chunks)
+
+            if is_internship_query(query):
+                forced_chunks = get_forced_internship_chunks()
+                # Merge + deduplicate
+                combined_chunks = forced_chunks + matched_chunks
+                combined_chunks = list(dict.fromkeys(combined_chunks))
+                context = "\n\n---\n\n".join(combined_chunks)
+            else:
+                context = "\n\n---\n\n".join(matched_chunks)
 
         with st.spinner("✍️ Generating answer..."):
             try:
