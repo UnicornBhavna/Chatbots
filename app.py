@@ -36,17 +36,9 @@ def is_internship_query(query: str) -> bool:
     keywords = ["intern", "internship", "interned", "trainee"]
     return any(word in query.lower() for word in keywords)
 
-def extract_year(text) -> int:
-    if not isinstance(text, str):
-        return 0
-    years = re.findall(r"(20\d{2})", text)
-    return max(map(int, years)) if years else 0
-
 def is_linkedin_query(query: str) -> bool:
     keywords = ["linkedin", "linked in", "profile"]
     return any(k in query.lower() for k in keywords)
-
-
 
 # === Load FAISS index ===
 @st.cache_resource(show_spinner=False)
@@ -237,6 +229,7 @@ if query:
                 prompt = f"""You are BhavBot, Bhavna's AI resume assistant.
 
 You ONLY answer using the provided resume snippets.
+
 You MUST list ALL internship experiences found in the resume snippets.
 Do NOT merge them.
 Do NOT omit any internship.
