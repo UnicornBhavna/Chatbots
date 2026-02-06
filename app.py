@@ -42,7 +42,7 @@ def is_linkedin_query(query: str) -> bool:
     return any(k in query.lower() for k in keywords)
 
 # === Load FAISS index ===
-#@st.cache_resource(show_spinner=False)
+@st.cache_resource(show_spinner=False)
 def load_faiss_index():
     print("🔧 Loading FAISS index...")
     t0 = time.time()
@@ -51,7 +51,7 @@ def load_faiss_index():
     return index
 
 # === Load metadata ===
-#@st.cache_resource(show_spinner=False)
+@st.cache_resource(show_spinner=False)
 def load_metadata():
     print("📚 Loading metadata...")
     t0 = time.time()
@@ -62,7 +62,7 @@ def load_metadata():
 
 
 # === Load embedding model ===
-#@st.cache_resource(show_spinner=False)
+@st.cache_resource(show_spinner=False)
 def load_model():
     print("🧠 Loading embedding model...")
     t0 = time.time()
@@ -79,7 +79,7 @@ def similarity_search(query: str, k: int = 10):
     print("🔍 Running similarity search...")
     t0 = time.time()
     query_embedding = embedding_model.encode([query])
-   # query_embedding = query_embedding / np.linalg.norm(query_embedding, axis=1, keepdims=True)
+    query_embedding = query_embedding / np.linalg.norm(query_embedding, axis=1, keepdims=True)
 
     scores, indices = faiss_index.search(query_embedding.astype("float32"), k=k)
 
@@ -88,11 +88,8 @@ def similarity_search(query: str, k: int = 10):
 
     for score, idx in zip(scores[0], indices[0]):
         if 0 <= idx < len(metadata_store):
-            text = metadata_store[idx].get("text")
-            if isinstance(text, str) and text.strip():
-                retrieved_chunks.append(text)
-                retrieved_scores.append(score)
-
+            retrieved_chunks.append(metadata_store[idx].get("text", ""))
+            retrieved_scores.append(score)
 
     # ✅ If query is education-related, append all university chunks
     if any(word in query.lower() for word in ["education", "university", "degree", "college"]):
@@ -104,8 +101,14 @@ def similarity_search(query: str, k: int = 10):
         print("🎓 Education-related query detected — merged all university chunks.")
 
     print(f"✅ Retrieved {len(retrieved_chunks)} chunks in {time.time() - t0:.2f}s")
+    
+    # Debugging: print retrieved chunks
+    print("\n=== 🔍 FAISS Retrieved Chunks ===")
+    for i, (chunk, score) in enumerate(zip(retrieved_chunks, retrieved_scores)):
+        print(f"[{i}] Score: {score:.4f}\n{chunk[:200]}...\n")
 
     return retrieved_chunks, retrieved_scores, indices
+
 
 def get_forced_internship_chunks():
     priority_companies = ["zurich", "zenatix"]
@@ -116,7 +119,6 @@ def get_forced_internship_chunks():
             text = m.get("text", "")
             if isinstance(text, str) and company in text.lower():
                 chunks.append(text)
-
     return chunks
 
 
@@ -164,7 +166,6 @@ with st.spinner("⏳ Loading FAISS index..."):
 
 with st.spinner("⏳ Loading metadata..."):
     metadata_store = load_metadata()
-
 
 with st.spinner("⏳ Loading embedding model (may take time on first run)..."):
     try:
@@ -217,15 +218,9 @@ if query:
 
     else:
         with st.spinner("🔍 Searching relevant resume snippets..."):
-            if is_internship_query(query):
-                matched_chunks = get_forced_internship_chunks()
-                if not matched_chunks:
-                    context = ""
-                else:
-                    context = "\n\n---\n\n".join(matched_chunks)
-            else:
-                matched_chunks, scores, indices = similarity_search(query)
-                context = "\n\n---\n\n".join(matched_chunks)
+            matched_chunks, scores, indices = similarity_search(query)
+            context = "\n\n---\n\n".join(matched_chunks)
+
         with st.spinner("✍️ Generating answer..."):
             try:
                 prompt = f"""You are BhavBot, Bhavna's AI resume assistant.
