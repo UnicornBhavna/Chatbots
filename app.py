@@ -17,7 +17,6 @@ FAISS_INDEX_FILE = "faiss.index"
 METADATA_FILE = "metadata.pkl"
 MAX_REQUESTS_PER_HOUR = 10
 RATE_LIMIT_KEY = "rate_limit"
-k = 5
 
 # === OpenAI API Key ===
 openai.api_key = st.secrets["OPENAI_API_KEY"]
@@ -57,7 +56,7 @@ def is_contact_query(query: str) -> bool:
 
 
 def get_contact_chunks():
-    contact_keywords = ["email", "phone", "linkedin", "contact"]
+    contact_keywords = ["email", "phone", "contact"]
 
     chunks = []
     for m in metadata_store:
@@ -107,7 +106,7 @@ def load_model():
         raise RuntimeError("Failed to load SentenceTransformer model.")
 
 # === Similarity Search with Education Fallback ===
-def similarity_search(query: str, k: int = 10):
+def similarity_search(query: str, k: int = 5):
     print("🔍 Running similarity search...")
     t0 = time.time()
     query_embedding = embedding_model.encode([query])
@@ -142,7 +141,7 @@ def similarity_search(query: str, k: int = 10):
     return retrieved_chunks, retrieved_scores, indices
 
 def get_forced_internship_chunks():
-    priority_companies = ["Zurich Insurance", "Zenatix"]
+    priority_companies = ["Zurich", "Zenatix"]
     chunks = []
 
     for m in metadata_store:
