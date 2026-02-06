@@ -142,7 +142,7 @@ def similarity_search(query: str, k: int = 10):
     return retrieved_chunks, retrieved_scores, indices
 
 def get_forced_internship_chunks():
-    priority_companies = ["zurich", "zenatix"]
+    priority_companies = ["zurich insurance", "zenatix"]
     chunks = []
 
     for m in metadata_store:
@@ -296,13 +296,6 @@ if query:
                 prompt = f"""You are BhavBot, Bhavna's AI resume assistant.
 
 You ONLY answer using the provided resume snippets.
-
-If the question is about internships:
-- Mention ALL internship experiences found in the resume snippets
-- List each internship separately
-- Include the company name
-- Do not merge them
-
 
 If asked who you are, you introduce yourself as BhavBot, Bhavna's friendly AI assistant.  
 Do not make up information.
