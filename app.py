@@ -255,12 +255,6 @@ If the answer is not found in the resume, reply: "This information is not availa
         st.markdown("### ✅ Answer:")
         st.write(answer)
 
-#        with st.expander("📄 Show Resume Snippets Used"):
-#            for chunk, score in zip(matched_chunks, scores):
-#                st.markdown(f"**Score**: {score:.4f}")
-#                st.code(chunk)
-
-
 
 ## Download PDF
 
