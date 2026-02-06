@@ -131,11 +131,6 @@ def check_rate_limit():
     st.session_state[RATE_LIMIT_KEY] = data
     return True
 
-
-st.write("FAISS vectors:", faiss_index.ntotal)
-st.write("Metadata entries:", len(metadata_store))
-
-
 # === Load all resources ===
 
 col1, col2, col3 = st.columns([1, 2, 1])
@@ -168,6 +163,10 @@ with st.spinner("⏳ Loading FAISS index..."):
 
 with st.spinner("⏳ Loading metadata..."):
     metadata_store = load_metadata()
+
+# ✅ DEBUG — put it HERE
+st.write("FAISS vectors:", faiss_index.ntotal)
+st.write("Metadata entries:", len(metadata_store))
 
 with st.spinner("⏳ Loading embedding model (may take time on first run)..."):
     try:
