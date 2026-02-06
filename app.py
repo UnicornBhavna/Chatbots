@@ -93,12 +93,6 @@ def similarity_search(query: str, k: int = 10):
 
     print(f"✅ Retrieved {len(retrieved_chunks)} chunks in {time.time() - t0:.2f}s")
     
-    # Debugging: print retrieved chunks
-    print("\n=== 🔍 FAISS Retrieved Chunks ===")
-    for i, (chunk, score) in enumerate(zip(retrieved_chunks, retrieved_scores)):
-        print(f"[{i}] Score: {score:.4f}\n{chunk[:200]}...\n")
-
-    return retrieved_chunks, retrieved_scores, indices
 
 # === Rate Limiting ===
 def check_rate_limit():
@@ -165,6 +159,12 @@ with st.spinner("⏳ Loading embedding model (may take time on first run)..."):
 # === UI ===
 st.title("👩‍💻 BhavBot - Bhavna's Resume Chatbot")
 st.markdown("Ask about Bhavna's experience, education, skills, or leadership roles. 💡 *Tip: I’m BhavBot, your friendly resume assistant!*")
+
+st.info(
+    "🔗 **Connect with Bhavna on LinkedIn:** "
+    "[linkedin.com/in/bhavna-lal](https://www.linkedin.com/in/bhavna-lal/)"
+)
+
 
 query = st.text_input("📨 Ask a question about Bhavna's resume:")
 
