@@ -41,7 +41,7 @@ def is_linkedin_query(query: str) -> bool:
     return any(k in query.lower() for k in keywords)
 
 # === Load FAISS index ===
-@st.cache_resource(show_spinner=False)
+#@st.cache_resource(show_spinner=False)
 def load_faiss_index():
     print("🔧 Loading FAISS index...")
     t0 = time.time()
@@ -50,7 +50,7 @@ def load_faiss_index():
     return index
 
 # === Load metadata ===
-@st.cache_resource(show_spinner=False)
+#@st.cache_resource(show_spinner=False)
 def load_metadata():
     print("📚 Loading metadata...")
     t0 = time.time()
@@ -61,7 +61,7 @@ def load_metadata():
 
 
 # === Load embedding model ===
-@st.cache_resource(show_spinner=False)
+#@st.cache_resource(show_spinner=False)
 def load_model():
     print("🧠 Loading embedding model...")
     t0 = time.time()
