@@ -17,6 +17,7 @@ FAISS_INDEX_FILE = "faiss.index"
 METADATA_FILE = "metadata.pkl"
 MAX_REQUESTS_PER_HOUR = 10
 RATE_LIMIT_KEY = "rate_limit"
+k = 5
 
 # === OpenAI API Key ===
 openai.api_key = st.secrets["OPENAI_API_KEY"]
@@ -164,9 +165,6 @@ with st.spinner("⏳ Loading FAISS index..."):
 with st.spinner("⏳ Loading metadata..."):
     metadata_store = load_metadata()
 
-# ✅ DEBUG — put it HERE
-st.write("FAISS vectors:", faiss_index.ntotal)
-st.write("Metadata entries:", len(metadata_store))
 
 with st.spinner("⏳ Loading embedding model (may take time on first run)..."):
     try:
