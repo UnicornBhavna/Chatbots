@@ -36,8 +36,9 @@ def is_internship_query(query: str) -> bool:
     keywords = ["intern", "internship", "interned", "interning"]
     return any(k in query.lower() for k in keywords)
 
-
-def extract_year(text: str) -> int:
+def extract_year(text) -> int:
+    if not isinstance(text, str):
+        return 0
     years = re.findall(r"(20\d{2})", text)
     return max(map(int, years)) if years else 0
 
@@ -94,8 +95,11 @@ def similarity_search(query: str, k: int = 10):
 
     for score, idx in zip(scores[0], indices[0]):
         if 0 <= idx < len(metadata_store):
-            retrieved_chunks.append(metadata_store[idx].get("text", ""))
-            retrieved_scores.append(score)
+            text = metadata_store[idx].get("text")
+            if isinstance(text, str) and text.strip():
+                retrieved_chunks.append(text)
+                retrieved_scores.append(score)
+
 
     # ✅ If query is education-related, append all university chunks
     if any(word in query.lower() for word in ["education", "university", "degree", "college"]):
