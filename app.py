@@ -78,7 +78,7 @@ def similarity_search(query: str, k: int = 10):
     print("🔍 Running similarity search...")
     t0 = time.time()
     query_embedding = embedding_model.encode([query])
-    query_embedding = query_embedding / np.linalg.norm(query_embedding, axis=1, keepdims=True)
+   # query_embedding = query_embedding / np.linalg.norm(query_embedding, axis=1, keepdims=True)
 
     scores, indices = faiss_index.search(query_embedding.astype("float32"), k=k)
 
