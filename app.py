@@ -49,6 +49,21 @@ def load_metadata():
     with open(METADATA_FILE, "rb") as f:
         data = pickle.load(f)
     print(f"✅ Metadata loaded in {time.time() - t0:.2f} sec. Entries: {len(data)}")
+
+    print("**")
+    with st.expander("🔍 Debug: LinkedIn Source"):
+    linkedin_chunks = [
+        (i, m["text"]) for i, m in enumerate(metadata_store)
+        if "linkedin" in m["text"].lower()
+    ]
+
+    st.write("Total LinkedIn chunks found:", len(linkedin_chunks))
+
+    for idx, text in linkedin_chunks:
+        st.markdown(f"**Metadata index:** {idx}")
+        st.text(text)
+
+    
     return data
 
 # === Load embedding model ===
