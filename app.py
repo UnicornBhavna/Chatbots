@@ -127,9 +127,6 @@ def get_forced_internship_chunks():
     return chunks
 
 
-
-    
-
 # === Rate Limiting ===
 def check_rate_limit():
     now = time.time()
@@ -239,7 +236,14 @@ if query:
             try:
                 prompt = f"""You are BhavBot, Bhavna's AI resume assistant.
 
-You ONLY answer using the provided resume snippets.  
+You ONLY answer using the provided resume snippets.
+You MUST list ALL internship experiences found in the resume snippets.
+Do NOT merge them.
+Do NOT omit any internship.
+Each internship must be listed separately with company name.
+
+Use my LinkedIn as mentioned, do not pick it up from metadata.
+
 If asked who you are, you introduce yourself as BhavBot, Bhavna's friendly AI assistant.  
 Do not make up information.
 
