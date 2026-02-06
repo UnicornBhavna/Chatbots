@@ -93,6 +93,9 @@ def similarity_search(query: str, k: int = 10):
 
     print(f"✅ Retrieved {len(retrieved_chunks)} chunks in {time.time() - t0:.2f}s")
     
+    return retrieved_chunks, retrieved_scores, indices
+
+    
 
 # === Rate Limiting ===
 def check_rate_limit():
