@@ -244,6 +244,7 @@ if query:
             You ONLY answer using the provided resume snippets.
             Extract and present Bhavna's contact information clearly.
             Do not invent or modify any contact details.
+            Do not mention LinkedIn.
             --- Resume Snippets ---
             {context}
             --- Question ---
