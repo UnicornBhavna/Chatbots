@@ -33,8 +33,8 @@ def is_general_query(query):
     return query.strip().lower() in general_phrases
 
 def is_internship_query(query: str) -> bool:
-    keywords = ["intern", "internship", "interned", "interning"]
-    return any(k in query.lower() for k in keywords)
+    keywords = ["intern", "internship", "interned", "trainee"]
+    return any(word in query.lower() for word in keywords)
 
 def extract_year(text) -> int:
     if not isinstance(text, str):
@@ -112,23 +112,19 @@ def similarity_search(query: str, k: int = 10):
 
     print(f"✅ Retrieved {len(retrieved_chunks)} chunks in {time.time() - t0:.2f}s")
 
-    # 🔥 Internship recency boost
-    if is_internship_query(query):
-        internship_chunks = list(zip(retrieved_chunks, retrieved_scores))
-
-        internship_chunks.sort(
-            key=lambda x: extract_year(x[0]),
-            reverse=True  # most recent first
-        )
-
-        retrieved_chunks = [c for c, _ in internship_chunks]
-        retrieved_scores = [s for _, s in internship_chunks]
-
-        print("🆙 Internship query detected — boosted recent internships.")
-
-    
     return retrieved_chunks, retrieved_scores, indices
 
+def get_forced_internship_chunks():
+    priority_companies = ["zurich", "zenatix"]
+    chunks = []
+
+    for company in priority_companies:
+        for m in metadata_store:
+            text = m.get("text", "")
+            if isinstance(text, str) and company in text.lower():
+                chunks.append(text)
+
+    return chunks
 
 
 
@@ -230,6 +226,14 @@ if query:
 
     else:
         with st.spinner("🔍 Searching relevant resume snippets..."):
+            if is_internship_query(query):
+                matched_chunks = get_forced_internship_chunks()
+            if not matched_chunks:
+                context = ""
+            else:
+                context = "\n\n---\n\n".join(matched_chunks)
+
+        else:
             matched_chunks, scores, indices = similarity_search(query)
             context = "\n\n---\n\n".join(matched_chunks)
 
